@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:title" content="2023 버킷리스트" />
+    <meta property="og:description" content="개인 포트폴리오에 들어갈 버킷리스트 페이지입니다." />
+    <meta property="og:image" content="https://cdn.pixabay.com/photo/2018/08/06/11/36/sanfermin-3587335_960_720.jpg" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+    <title>2023 버킷리스트</title>
+
+
+    <style>
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .mypic {
+            width: 100%;
+            height: 200px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://cdn.pixabay.com/photo/2018/08/06/11/36/sanfermin-3587335_960_720.jpg');
+            background-position: center;
+            background-size: cover;
+
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .mypic > h1 {
+            font-size: 30px;
+        }
+        .mybox {
+            width: 95%;
+            max-width: 700px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px lightblue;
+            margin: 20px auto;
+        }
+        .mybucket {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mybucket > input {
+            width: 70%;
+        }
+        .mybox > li {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 10px;
+            min-height: 48px;
+        }
+        .mybox > li > h2 {
+            max-width: 75%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-right: auto;
+            margin-bottom: 0px;
+        }
+        .mybox > li > h2.done {
+            text-decoration:line-through
+        }
+        .blockquote {
+            font-size: 15px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        const quotes = [
+          {
+            "quote": "성공에 대한 나의 의지가 충분히 강하다면 실패는 결코 나를 따라잡지 못할 것이다.",
+            "source": "오그 만디노"
+          },
+          {
+            "quote": "세상에서 가장 현명한 사람은\n" +
+                "모든 사람으로부터 배우는 사람이다\n" +
+                "가장 사랑받는 사람은 칭찬하는 사람이다\n" +
+                "가장 강한 사람은 감정을 조절할 줄 아는 사람이다",
+            "source": "탈무드"
+          },
+          {
+            "quote": "작은 기회로부터 종종 위대한 업적이 시작된다.",
+            "source": "데모스테네스"
+          },
+            {
+            "quote": "원하는 것을 얻기 위한 첫 번째 단계는\n" +
+                "내가 무엇을 원하는지 결정하는 것이다",
+            "source": "벤스타인"
+          },
+            {
+            "quote": "무엇을 시도할 용기도 없으면서 멋진 삶을 바란단 말인가",
+            "source": "반고흐"
+          }
+        ]
+
+        function randomQuote(){
+          let random = quotes[Math.floor(Math.random() * quotes.length)];
+          quotation.innerText = `"${random.quote}"`;
+          source.innerText = random.source;
+        }
+
+        setInterval(randomQuote, 3000);
+
+
+
+        $(document).ready(function () {
+            show_bucket();
+        });
+        function show_bucket(){
+            $.ajax({
+                type: "GET",
+                url: "/bucket",
+                data: {},
+                success: function (response) {
+                    let rows = response['buckets']
+                    for (let i =0; i<rows.length; i++){
+                        let bucket = rows[i]['bucket']
+                        let num = rows[i]['num']
+                        let done = rows[i]['done']
+
+                        let temp_html = ``
+
+                        if(done==0){ /*안한거*/
+                            temp_html=`<li>
+                                        <h2>✅ ${bucket}</h2>
+                                        <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">완료!</button>
+                                        &nbsp<button onclick="delete_bucket(${num})" type="button" class="btn btn-outline-primary">삭제</button>
+                                    </li>`
+                        }else{ /*한거*/
+                            temp_html = `<li>
+                                            <h2 class="done">✅ ${bucket}</h2>
+                                            <button onclick="not_done_bucket(${num})" type="button" class="btn btn-outline-primary">취소</button>
+                                            &nbsp<button onclick="delete_bucket(${num})" type="button" class="btn btn-outline-primary">삭제</button>
+                                        </li>`
+                        }
+                        $('#bucket-list').append(temp_html)
+                    }
+                }
+            });
+        }
+        function save_bucket(){
+            let bucket = $('#bucket').val()
+            $.ajax({
+                type: "POST",
+                url: "/bucket",
+                data: {bucket_give:bucket},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+        function done_bucket(num) {
+            $.ajax({
+                type: "POST",
+                url: "/bucket/done",
+                data: {num_give: num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+            function not_done_bucket(num){
+            $.ajax({
+                type: "POST",
+                url: "/bucket/notdone",
+                data: {num_give:num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+        function delete_bucket(num){
+            $.ajax({
+                type: "POST",
+                url: "/bucket/delete",
+                data: {num_give:num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="mypic">
+        <h1>2023년 버킷리스트</h1>
+    </div>
+
+    <div class="mybox">
+        <div class="mybucket">
+            <input id="bucket" class="form-control" type="text" placeholder="이루고 싶은 것을 입력하세요">
+            <button onclick="save_bucket()" type="button" class="btn btn-outline-primary">기록하기</button>
+        </div>
+    </div>
+    <div class="mybox" id="bucket-list">
+    </div>
+
+    <div class="blockquote">
+      <p id="quotation"></p>
+      <footer>
+        <p id="source"></p>
+      </footer>
+    </div>
+</body>
+</html>
